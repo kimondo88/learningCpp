@@ -1,0 +1,58 @@
+notatki
+ 100 + 1 / 2 50
+ 100 + 50 / 2 75
+ 75 + 50 / 2 63
+ 63 + 50 / 2 57
+ 50 + 1 / 2 25
+ 50 + 25 / 2 38
+ 38 + 25 / 2 31
+ 31 + 25 / 2 28
+ 28 + 25 / 2 27
+ 50 + 26 / 2  75 > 3
+
+
+
+1. wyswietl liste gier
+    funkcja wyswietlajaca liste gier
+
+2. dodaj tytuł
+    wpisz nazwe tytulu do listy
+    sprawdz czy nie jest to duplikat
+    dodaj do listy jesli nie duplikat
+    potwierdz ze dodano tytul
+    jesli duplikat nie dodawaj wyswietl duplikat
+
+3. usuń tytuł
+    wpisz nazwe/nr tytulu ktory chcesz usunac
+    sprawdz czy jest na liscie
+    jesli nie ma wyswietl ze nie ma
+    usun tytul z listy
+    wyswietl ze usunieto tytuł z listy
+
+spytaj sie co chcesz zrobic
+1, 2, 3
+wykonaj funkcje
+
+World Jumble pseudocode:
+
+Wyswietl przetasowane literowo słowo z listy pieciu roznych slow.
+    Matryca slow wraz z wskazowkami.
+    Wez jedno slowo z indexu matrycy, wraz wskazowką.
+    PRzetasuj funkcją slowo.
+        Stworz funkcję przetasowującą słowo.
+        Wyswietl przetasowane slowo.
+
+Wpisz zgadywane slowo / komendę, wyjdz z gry albo popros o wskazowkę.
+    Sprawdz czy zgadywane prze gracza slowo jest w matrycy
+    Zareaguj jesli gracz poprosi o 'quit' koniec gry.
+    Wyswietl wskazowke jesli gracz poprosi o 'hint'.
+
+Ocen gracza, punkty za prawidlowe zgadniecie, minusowe za wyswietlenie wskazowki.
+    Przydziel punkty za wygraną.
+    odejmij punkty za wskazowki.
+    
+Jesli zgadł pogratuluj za grę.
+
+Funckja sprawdzajaca czy guess jest sekretnym slowem
+
+

@@ -1,0 +1,79 @@
+create an empty tic-tac-toe
+
+display game instructions
+
+determine who goes first
+
+display the board
+
+while nobody won and its not a tie
+
+if its human turn
+
+get the human move
+
+update board with human move
+
+calculate computer move
+
+update the board with computer move
+
+display the board
+
+switch turns
+
+congratulate the winner or declare a tie
+
+
+void instructions()
+    display instructions
+
+char askYesNo(string question)
+    ask yes or no question. Receive question. Returns.
+    either 'y' or 'n'
+
+int askNumber(string question, int high, int low = 0)
+    a low number and a higfh number. Returns a number in the range from low to high.
+
+char humanPiece()
+    determines the human piece. Return either the 'X' or 'O'
+
+char opponent(char piece)
+    calculate the opposing piece given ap iece. Receives either 'x' or 'o'.
+
+void displayBoard(const vector<char>& board)
+    displays the board on screen. Receives board.
+
+char winner(const vector<char>& board)
+    determines the game winner, receives board. Returns board. 
+    an 'x' 'o' 't' to indicat ite or 'n' to indicate no one has won yet.
+
+bool isLegal(const vector<char>& board, int move)
+    determines if move is legal. Receives board and move, returns eithe false or true.
+
+int humanMove(const vector<char>& board, char human)
+    gets human move, receives board and human piece. Returns human move.
+
+int computerMove(vector <char>board, char computer)
+    calculate computer move, recieves board and the computer piece. Return computer move.
+
+void announceWinner(char winner, char computer, char human)
+    congratulates the winner or declare a tie. Receives winning side, the computer piece and human piece.
+
+//globalConstants
+
+const char X = 'X';
+const char O = 'O';
+
+const char EMPTY = ' ';
+const char TIE = 'T';
+
+const char NO_ONE = 'N';
+
+in global constans section X is short for char 'x' one of the two pieces in the game. O represents the 'o' piece in the game. 
+EMPTY is also a char, represent empty square on the board.
+Its a space because when its displayed it will look like empty square. 
+TIE is a char representing a tie game. And NO_ONE is a char used to represnt than neither side won yet.
+
+
+
