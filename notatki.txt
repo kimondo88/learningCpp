@@ -56,3 +56,19 @@ Jesli zgadł pogratuluj za grę.
 Funckja sprawdzajaca czy guess jest sekretnym slowem
 
 
+critter wskazuje na to jak glodny jest i jak chce mu sie pić
+
+funkcja ktora sprawdza glod crittera i wyswietla wskazowkę
+    sprawdzic czy glod jest wiekszy niz 15
+    sprawdzic czy glod jest wiekszy niz 10
+    sprawdzic czy glod jest wiekszy niz 5
+    else wyswietlic nie glodny
+
+funkcja sprawdzają poziom pragnienia crittera i wyswietlajaca wskazowke
+    czy pragnienie jest wieksze niz 15
+    czy pragnienie jest wieksze niz 10
+    czy pragnienie jest wieksze niz 5
+    else wyswietlic nie chce sie pić
+
+
+
