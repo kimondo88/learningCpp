@@ -76,4 +76,34 @@ Its a space because when its displayed it will look like empty square.
 TIE is a char representing a tie game. And NO_ONE is a char used to represnt than neither side won yet.
 
 
+m_pTail pointer wskazujacy na ostatniego czlonka klasy player
+
+wpisujemy gracza.
+sprawdzamy czy lista jest pusta 
+    ustanawiamy go m_pheadem
+jesli nie pusta to
+    nowy gracz zostaje m_pHeadem, 
+    pHead zostaje pTailem,
+    wskazujemy pTail na gracza ktory byl poporzednio m_pHeadem
+        jesli nie byl p
+
+Head
+        head
+head    tail
+
+head    gracz   tail 
+
+head - gracz - gracz - tail
+
+gucio head 1
+franek 
+domek tail 2
+
+
+remove > gucio
+
+franek zostaje
+
+
+
 
