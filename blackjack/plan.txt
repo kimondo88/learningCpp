@@ -1,0 +1,38 @@
+Class   BaseClass  Description
+Card    None        Blackjack playing card
+Hand    None        Blackjack hand, a collection of card objects
+Deck    Hand        A blackjack deck, has extra functionality that hand does not, such as shuffling ad dealing.
+
+GenericPlayer   Hand        A generic blackjack player. Not full player, but common elements of a human player and a computer one.
+Player  GenericPlayer       A human blackjack player
+House   GenericPlayer       A computer player, the house.
+Game    None        A blackjack game.
+
+
+Card   Deck -> Hand <- Generic player <- House      Game
+                            ^
+                            |
+                            Player
+
+
+
+Card Class
+
+Member          Description
+rank m_Rank     Rank of the card( ace, 2, 3 and so on) rank is an enumeration of all 13 ranks
+suit m_Suit     Suit of the card(clubs, diamons, hearts or spades), suit is enumeration for the four possible suits.
+bool m_IsFaceUp Indicates whether the card is face up. Affects how the is displayed and the value it has.
+int GetValue()  Returns value of the card.
+void Flip()     Flips a card. Face up becomes face down, and face down becomes face up.
+
+Hand Class
+
+Member                  Description
+vector<Card*>m_Cards    Collection of cards, Stores pointers to cards.
+void Add(Card* pCard)   Adds a card to a hand. Adds pointer to Card to the vector m_Cards.
+void Clear()            Clears all cards from the hands. Removes all pointer of the vector m_Cards, delete all acciociated objects on the heap.
+in GetTotal() const     Returns the total value of the hand.
+
+
+
+
