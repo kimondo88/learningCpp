@@ -19,6 +19,7 @@ Card   Deck -> Hand <- Generic player <- House      Game
 Card Class
 
 Member          Description
+------------------------------------------------------------------------------------------------------------------------
 rank m_Rank     Rank of the card( ace, 2, 3 and so on) rank is an enumeration of all 13 ranks
 suit m_Suit     Suit of the card(clubs, diamons, hearts or spades), suit is enumeration for the four possible suits.
 bool m_IsFaceUp Indicates whether the card is face up. Affects how the is displayed and the value it has.
@@ -26,12 +27,70 @@ int GetValue()  Returns value of the card.
 void Flip()     Flips a card. Face up becomes face down, and face down becomes face up.
 
 Hand Class
-
 Member                  Description
+--------------------------------------------------------------------------------------------------------------
 vector<Card*>m_Cards    Collection of cards, Stores pointers to cards.
 void Add(Card* pCard)   Adds a card to a hand. Adds pointer to Card to the vector m_Cards.
 void Clear()            Clears all cards from the hands. Removes all pointer of the vector m_Cards, delete all acciociated objects on the heap.
 in GetTotal() const     Returns the total value of the hand.
+
+GenericPlayerc Class (abstract)
+Member                              Description
+-------------------------------------------------------------------------------------------------------------
+string m_Name                       generic player name 
+virtual bool isHitting() const = 0  Indicates whether the player want another hit. Piure virtual function.
+bool isBusted() const               Indicates whether generic player5 is busted
+void Bust() const                   announces that the generic player is busted.
+
+Player Class
+Member                              Descritpion
+----------------------------------------------------------------------------------------
+virtual bool isHitting() const      Indicates whether the player wants another hit.
+void Win() const                    Announces the player wins.
+void Lose() const                   Announces the player lose.
+void Push() const                   Announces the player pushes.
+
+House Class     
+Member                              Description
+---------------------------------------------------------------------------------------
+virtual bool isHitting() const      Indicates whether the house wants another hit.
+void FlipFirstCard()                Flips over the card.
+
+Deck Class
+Member                              Description
+---------------------------------------------------------------------------------------
+void Populate()                     Create standard deck of 52.
+void Shuffle()                      Shuffles cards.
+void Deal(Hand& aHAnd)              Deals one card to a hand.
+void AdditionalCard(GenericPlayer&  Gives additional card to a generic player for as long
+aGenericPlayer)                     as the generic player can and want to hit.
+
+Game Class
+Member                              Description
+----------------------------------------------------------------------------------------
+Deck m_Deck                         A deck of cards.
+House m_House                       The casino hand, the house.
+vector<Player> m_Players            Collection of human players.
+void Play()                         Plays a round of blackjack.
+
+Pseudocode for logic:
+Deal players and the house two initial cards.
+    Hide the house first card.
+    Display players and the house cards.
+Deal additional cards to players.
+    Reveal house first card.
+Deal additional card to house.
+    if house is busted
+        everyone who is not busted wins.
+    Otherwise
+        for each player
+            if player isnt busted
+                if player total is greater than the house total
+                player wins
+            otherwise if plater total is less than house total
+                player loses.
+            Otherwise player pushes.
+Remove everyone cards.
 
 
 
