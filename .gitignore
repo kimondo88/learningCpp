@@ -33,4 +33,9 @@
 *.bat
 *.json
 
+
+*ilk
+*pdb
+
 cppgames.code-workspace
+learnigcpp.code-workspace
