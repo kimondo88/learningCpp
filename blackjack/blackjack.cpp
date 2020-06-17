@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <cstdlib>
 #include <random>
 
 using std::cout;
@@ -13,6 +14,7 @@ using std::mt19937;
 using std::string;
 using std::vector;
 using std::ostream;
+using std::shuffle;
 
 class Card
 {
@@ -121,5 +123,174 @@ int Hand::GetTotal() const
         total +=10;
     }
     return total;
+}
+
+class GenericPlayer : public Hand
+{
+friend ostream& operator<<(ostream& os, const GenericPlayer& aGenericPlayer);
+public:
+    GenericPlayer(const string& name= "");
+    virtual ~GenericPlayer();
+    virtual bool IsHitting() const = 0; // whether the player wants to keep hitting
+    bool IsBusted() const; // return whether the player is busted - total greater than 21.
+    void Bust() const; //annoucnes player busts
+protected:
+    string m_Name;
+};
+
+GenericPlayer::GenericPlayer(const string& name):
+    m_Name(name)
+{}
+
+GenericPlayer::~GenericPlayer()
+{}
+
+bool GenericPlayer::IsBusted() const
+{
+    return (GetTotal() > 21);
+}
+
+void GenericPlayer::Bust() const
+{
+    cout << m_Name << " busts.\n";
+}
+
+class Player : public GenericPlayer
+{
+public:
+    Player(const string& name = "");
+    virtual ~Player();
+    virtual bool IsHitting() const; //announces wheter the player is hitting
+    void Win() const; // announces player wins.
+    void Lose() const;
+    void Push() const;
+};
+
+Player::Player(const string& name):
+    GenericPlayer(name)
+{}
+
+Player::~Player()
+{}
+
+bool Player::IsHitting() const
+{
+    cout << m_Name << ", do you wanna hit? (Y/N): ";
+    char response;
+    cin >> response;
+    return (response == 'y' || response == 'Y');
+}
+
+void Player::Win() const
+{
+    cout << m_Name << " wins.\n";
+}
+
+void Player::Lose() const
+{
+    cout << m_Name << " loses.\n";
+}
+
+void Player::Push() const
+{
+    cout << m_Name << " pushes.\n";
+}
+
+class House : public GenericPlayer
+{
+public:
+    House(const string& name = "House");
+    virtual ~House();
+    virtual bool IsHitting() const;
+    void FlipFirstCard();
+};
+
+House::House(const string& name):
+    GenericPlayer(name)
+{}
+
+House::~House()
+{}
+
+bool House::IsHitting() const
+{
+    return (GetTotal() <= 16);
+}
+
+void House::FlipFirstCard()
+{
+    if(!(m_Cards.empty()))
+    {
+        m_Cards[0]->Flip();
+    }
+    else
+    {
+        cout << "No card to flip!\n";
+    }
+}
+
+class Deck : public Hand
+{
+public:
+    Deck();
+    virtual ~Deck();
+    void Populate(); //create standard deck of 52 cards.
+    void Shuffle(); //shuffle cards.
+    void Deal(Hand& aHand); // gives additional card to player.
+    void AdditionalCards(GenericPlayer& aGenericPlayer);
+};
+
+Deck::Deck()
+{
+    m_Cards.reserve(52);
+    Populate();
+}
+
+Deck::~Deck()
+{}
+
+void Deck::Populate()
+{
+    Clear();
+    for(int s = Card::CLUBS; s <= Card::SPADES; ++s)
+    {
+        for(int r= Card::ACE; s <= Card::KING; ++r)
+        {
+            Add(new Card(static_cast<Card::rank>(r), static_cast<Card::suit>(s)));
+        }
+    }
+}
+
+void Deck::Shuffle()
+{
+    mt19937 rng(static_cast<unsigned int>(time(0)));
+    shuffle(m_Cards.begin(), m_Cards.end(), rng);
+}
+
+void Deck::Deal(Hand& aHand)
+{
+    if(!m_Cards.empty())
+    {
+        aHand.Add(m_Cards.back());
+        m_Cards.pop_back();
+    }
+    else
+    {
+        cout << "Out of cards. Unable to deal.";
+    } 
+}
+
+void Deck::AdditionalCards(GenericPlayer& aGenericPlayer)
+{
+    cout << endl; // continue to deal cards as long a generic player isnt busted.
+    while(!(aGenericPlayer.IsBusted()) && aGenericPlayer.IsHitting())
+    {
+        Deal(aGenericPlayer);
+        cout << aGenericPlayer << endl;
+    }
+    if(aGenericPlayer.IsBusted())
+    {
+        aGenericPlayer.Bust();
+    }
 }
 
