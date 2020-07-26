@@ -41,6 +41,25 @@ void Boss::SpecialAttack() const
     cout << " damage points!\n";
 }
 
+class FinalBoss : public Boss
+{
+public:
+    FinalBoss();
+    void MegaAttack() const;
+private:
+    int m_DamageMultiplier;
+};
+
+FinalBoss::FinalBoss():
+    m_DamageMultiplier(30)
+{}
+
+void FinalBoss::MegaAttack() const
+{
+    cout << "Special Attack inflicts " << (m_DamageMultiplier * m_Damage);
+    cout << " damage points!\n";
+}
+
 int main()
 {
     cout << "Creating an enemy.\n";
@@ -51,6 +70,11 @@ int main()
     Boss boss1;
     boss1.Attack();
     boss1.SpecialAttack();
+
+    cout << "\nCreating a final boss.\n";
+    FinalBoss bossFin;
+    bossFin.Attack();
+    bossFin.MegaAttack();
 
     return 0;
 }
