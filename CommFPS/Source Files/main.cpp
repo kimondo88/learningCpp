@@ -1,8 +1,10 @@
 #include <iostream>
 #include <Windows.h>
+#include <chrono>
 
 //using std::cout;
-//using std::wstring;
+using std::wstring;
+using std::chrono::system_clock;
 using namespace std;
 
 int nScreenWidth = 120;
@@ -44,9 +46,27 @@ int main()
     map += L"#..............#";
     map += L"#..............#";
     map += L"################";
+
+    auto tp1 = system_clock::now();
+    auto tp2 = system_clock::now();
+
+
     //gameloop
     while(true)
     {
+        tp2 = system_clock::now();
+        std::chrono::duration<float> elapsedTime = tp2 - tp1;
+        tp1 = tp2;
+        float fElapsedTime = elapsedTime.count();
+
+        //Controls
+        //Handle CCW Rotation.
+        //if(GetAsyncKeyState(VK_TAB) & 0x8000)
+            //fPlayerA -= (0.1f) * fElapsedTime; 
+        //if( GetAsyncKeyState('A') & 0x8000)
+            //fPlayerA += (0.1f) * fElapsedTime;        
+        if(GetKeyState(0x41) & 0x8000)
+
         for(int x = 0; x < nScreenWidth; ++x)
         {
             // for each column calculate the projected ray angle into world space
@@ -104,7 +124,7 @@ int main()
         }
 
     screen[nScreenWidth * nScreenHeight -1] = '\0';
-    WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 },
+    WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 },
     &dwBytesWritten);
     }
 
