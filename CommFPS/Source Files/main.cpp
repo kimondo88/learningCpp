@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <chrono>
+#pragma comment(lib, "User32.lib")
 
 //using std::cout;
 using std::wstring;
@@ -17,7 +18,7 @@ float fPlayerA = 0.0f;
 int nMapHeight = 16;
 int nMapWidth = 16;
 
-float fFOV = 3.14159 / 4.0;
+float fFOV = 3.14159f / 4.0f;
 float fDepth = 16.0f;
 
 int main()
@@ -34,13 +35,13 @@ int main()
     map += L"#..............#";
     map += L"#..............#";
     map += L"#..............#";
+    map += L"#.........#....#";
+    map += L"#.........#....#";
     map += L"#..............#";
     map += L"#..............#";
     map += L"#..............#";
     map += L"#..............#";
-    map += L"#..............#";
-    map += L"#..............#";
-    map += L"#..............#";
+    map += L"#........#######";
     map += L"#..............#";
     map += L"#..............#";
     map += L"#..............#";
@@ -61,11 +62,20 @@ int main()
 
         //Controls
         //Handle CCW Rotation.
-        //if(GetAsyncKeyState(VK_TAB) & 0x8000)
-            //fPlayerA -= (0.1f) * fElapsedTime; 
-        //if( GetAsyncKeyState('A') & 0x8000)
-            //fPlayerA += (0.1f) * fElapsedTime;        
-        if(GetKeyState(0x41) & 0x8000)
+        if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
+            fPlayerA -= (0.8f) * fElapsedTime; 
+        if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
+            fPlayerA += (0.8f) * fElapsedTime;
+        if (GetAsyncKeyState((unsigned short)'W') & 0x8000)
+        {
+            fPlayerX += sinf(fPlayerA) * 5.0f * fElapsedTime;
+            fPlayerY += cosf(fPlayerA) * 5.0f * fElapsedTime;
+        }
+        if (GetAsyncKeyState((unsigned short)'S') & 0x8000)
+        {
+            fPlayerX -= sinf(fPlayerA) * 5.0f * fElapsedTime;
+            fPlayerY -= cosf(fPlayerA) * 5.0f * fElapsedTime;
+        }
 
         for(int x = 0; x < nScreenWidth; ++x)
         {
@@ -73,7 +83,7 @@ int main()
             float fRayAngle = ( fPlayerA - fFOV / 2.0f) + 
             ((float)x / (float)nScreenWidth) * fFOV;
 
-            float fDistanceToWall = 0;
+            float fDistanceToWall = 0.0f;
             bool bHitWall = false;
 
             float fEyeX = sinf(fRayAngle); // unit vector for ray in player space
@@ -108,18 +118,34 @@ int main()
             int nCeiling = (float)(nScreenHeight / 2.0 ) - nScreenHeight / ((float)fDistanceToWall);
             int nFloor = nScreenHeight - nCeiling;
 
+            short nShade = ' ';
+            if (fDistanceToWall <= fDepth / 4.0f)        nShade = 0x2588; // very close
+            else if (fDistanceToWall < fDepth / 3.0f)    nShade = 0x2593;
+            else if (fDistanceToWall < fDepth / 2.0f)    nShade = 0x2592;
+            else if (fDistanceToWall < fDepth )          nShade = 0x2591;
+            else                                         nShade = ' '; // too far away.
+            
             for(int y = 0; y < nScreenHeight; y++)
             {
-                if(y < nCeiling)
+                if (y <= nCeiling)
                     screen[y*nScreenWidth+x] = ' ';
-                else if(y > nCeiling&& y <= nFloor)
-                    screen[y*nScreenWidth+x] = '#';
+                else if (y > nCeiling && y <= nFloor)
+                {
+                    screen[y*nScreenWidth+x] = nShade;
+                }
                 else
-                    screen[y*nScreenWidth+x] = ' ';
-
+                {
+                    float b = 1.0f - (((float)y - nScreenHeight / 2.0f) / ((float)nScreenHeight / 2.0f));
+                    if (b < 0.25)        nShade = '#';
+                    else if (b < 0.5)    nShade = 'x';
+                    else if (b < 0.75)   nShade = '.';
+                    else if (b < 0.9)    nShade = '-';
+                    else                 nShade = ' ';
+                    screen[y*nScreenWidth+x] = nShade;
+                }
                 
-
             }
+        
 
         }
 
