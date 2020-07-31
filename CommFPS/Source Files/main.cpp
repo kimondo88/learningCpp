@@ -1,12 +1,18 @@
 #include <iostream>
 #include <Windows.h>
 #include <chrono>
+#include <vector>
+#include <algorithm>
+
 #pragma comment(lib, "User32.lib")
 
 //using std::cout;
 using std::wstring;
 using std::chrono::system_clock;
-using namespace std;
+using std::vector;
+using std::pair;
+using std::make_pair;
+using std::sort;
 
 int nScreenWidth = 120;
 int nScreenHeight = 40;
@@ -41,9 +47,9 @@ int main()
     map += L"#..............#";
     map += L"#..............#";
     map += L"#..............#";
-    map += L"#........#######";
     map += L"#..............#";
     map += L"#..............#";
+    map += L"#......#########";
     map += L"#..............#";
     map += L"#..............#";
     map += L"################";
@@ -70,11 +76,21 @@ int main()
         {
             fPlayerX += sinf(fPlayerA) * 5.0f * fElapsedTime;
             fPlayerY += cosf(fPlayerA) * 5.0f * fElapsedTime;
+            if (map[(int)fPlayerY * nMapWidth + (int)fPlayerX] == '#')
+            {
+                fPlayerX -= sinf(fPlayerA) * 5.0f * fElapsedTime;
+                fPlayerY -= cosf(fPlayerA) * 5.0f * fElapsedTime;
+            }
         }
         if (GetAsyncKeyState((unsigned short)'S') & 0x8000)
         {
             fPlayerX -= sinf(fPlayerA) * 5.0f * fElapsedTime;
             fPlayerY -= cosf(fPlayerA) * 5.0f * fElapsedTime;
+            if (map[(int)fPlayerY * nMapWidth + (int)fPlayerX] == '#')
+            {
+                fPlayerX += sinf(fPlayerA) * 5.0f * fElapsedTime;
+                fPlayerY += cosf(fPlayerA) * 5.0f * fElapsedTime;
+            }
         }
 
         for(int x = 0; x < nScreenWidth; ++x)
@@ -85,6 +101,7 @@ int main()
 
             float fDistanceToWall = 0.0f;
             bool bHitWall = false;
+            bool bBoundary = false;
 
             float fEyeX = sinf(fRayAngle); // unit vector for ray in player space
             float fEyeY = cosf(fRayAngle);
@@ -109,6 +126,26 @@ int main()
                     if(map[nTestY * nMapWidth + nTestX] == '#')
                     {
                         bHitWall = true;
+
+                        vector<pair<float, float>> p; // distance to perfect corner, dot.
+
+                        for (int tx = 0; tx < 2; tx++)
+                            for (int ty = 0; ty < 2; ty++)
+                            {
+                                float vy = (float)nTestY + ty - fPlayerY;
+                                float vx = (float)nTestX + tx - fPlayerX;
+                                float d = sqrt(vx*vx + vy*vy);
+                                float dot = (fEyeX * vx / d) + (fEyeY * vy /d);
+                                p.push_back(make_pair(d, dot));
+                            }
+                        
+                        //sort pairs from closest to farthest
+                        sort(p.begin(), p.end(), [](const pair<float, float> &left, const pair<float, float> &right) {return left.first < right.first;});
+
+                        float fBound = 0.01;
+                        if (acos(p.at(0).second) < fBound) bBoundary = true;
+                        if (acos(p.at(1).second) < fBound) bBoundary = true;
+
                     }
                 }
                 
@@ -124,6 +161,8 @@ int main()
             else if (fDistanceToWall < fDepth / 2.0f)    nShade = 0x2592;
             else if (fDistanceToWall < fDepth )          nShade = 0x2591;
             else                                         nShade = ' '; // too far away.
+
+            if(bBoundary)   nShade = ' ';
             
             for(int y = 0; y < nScreenHeight; y++)
             {
@@ -149,6 +188,17 @@ int main()
 
         }
 
+    //display stats
+    swprintf_s(screen, 40, L"X=%3.2f, Y=%3.2f, A=%3.2f FPS=%3.2f ", fPlayerX, fPlayerY, fPlayerA, 1.0f/ fElapsedTime );
+
+    //display map
+    for (int nx = 0; nx < nMapWidth; nx++)
+        for (int ny = 0; ny < nMapWidth; ny++)
+        {
+            screen[(ny + 1)*nScreenWidth + nx] = map[ny*nMapWidth + (nMapWidth- nx - 1)];
+        }
+
+    screen[((int)fPlayerY + 1)*nScreenWidth + (int)nMapWidth - (int)fPlayerX] = 'P';
     screen[nScreenWidth * nScreenHeight -1] = '\0';
     WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 },
     &dwBytesWritten);
