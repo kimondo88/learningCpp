@@ -24,6 +24,9 @@ float fPlayerA = 0.0f;
 int nMapHeight = 16;
 int nMapWidth = 16;
 
+int weaponWidth = 7;
+int weaponHeight = 4;
+
 float fFOV = 3.14159f / 4.0f;
 float fDepth = 16.0f;
 
@@ -53,6 +56,13 @@ int main()
     map += L"#..............#";
     map += L"#..............#";
     map += L"################";
+
+    wstring weapon;
+    weapon += L"...^...";
+    weapon += L"../0P..";
+    weapon += L"./0000.";
+    weapon += L"/000000";
+    weapon += L"DDDDDDD";
 
     auto tp1 = system_clock::now();
     auto tp2 = system_clock::now();
@@ -199,6 +209,16 @@ int main()
         }
 
     screen[((int)fPlayerY + 1)*nScreenWidth + (int)nMapWidth - (int)fPlayerX] = 'P';
+
+    // display weapon
+    for (int ny = 0; ny < 5; ny++)
+        for (int nx = 0; nx < 7 ; nx++)
+        {
+            if(weapon[ny*weaponWidth+nx] != '.')
+               screen[(ny+35)*nScreenWidth + nx+60] = weapon[ny*weaponWidth+nx];
+        }
+
+
     screen[nScreenWidth * nScreenHeight -1] = '\0';
     WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 },
     &dwBytesWritten);
@@ -207,3 +227,7 @@ int main()
     return 0;
 
 }
+
+//0*7+0
+//0*7+1
+//2*7+0
