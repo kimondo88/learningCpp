@@ -24,8 +24,8 @@ float fPlayerA = 0.0f;
 int nMapHeight = 16;
 int nMapWidth = 16;
 
-int weaponWidth = 7;
-int weaponHeight = 4;
+int weaponWidth = 10;
+int weaponHeight = 5;
 
 float fFOV = 3.14159f / 4.0f;
 float fDepth = 16.0f;
@@ -58,11 +58,16 @@ int main()
     map += L"################";
 
     wstring weapon;
-    weapon += L"...^...";
-    weapon += L"../0P..";
-    weapon += L"./0000.";
-    weapon += L"/000000";
-    weapon += L"DDDDDDD";
+    weapon += L"...WKKW...";
+    weapon += L"..N0xclOW.";
+    weapon += L".WOc:;';OW";
+    weapon += L"WXOkd:;:dK";
+    weapon += L"WKOO00Okx0";
+
+
+
+
+
 
     auto tp1 = system_clock::now();
     auto tp2 = system_clock::now();
@@ -212,7 +217,7 @@ int main()
 
     // display weapon
     for (int ny = 0; ny < 5; ny++)
-        for (int nx = 0; nx < 7 ; nx++)
+        for (int nx = 0; nx < 10 ; nx++)
         {
             if(weapon[ny*weaponWidth+nx] != '.')
                screen[(ny+35)*nScreenWidth + nx+60] = weapon[ny*weaponWidth+nx];
