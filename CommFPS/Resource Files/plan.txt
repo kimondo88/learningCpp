@@ -1,0 +1,23 @@
+spawn one item
+    make position in the world to place item | itemX, itemY
+    function to display item
+        check if player see item
+            if pl see then render item
+    player get the item
+        check collision with player
+            if collision despawn item
+                assign values of item to player        
+
+class item
+    item(m_ItemX, m_ItemY, m_Points)
+    ~item()
+    getValue(fItemX, fItemY, points)
+
+
+
+
+            enemy < common trash < boss < final boss
+                v
+     player > generic player  <  item -- ammo / weapon / misc
+                    ^
+                    stats

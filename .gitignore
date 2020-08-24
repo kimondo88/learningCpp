@@ -40,3 +40,7 @@
 cppgames.code-workspace
 learnigcpp.code-workspace
 .project
+.vs/slnx.sqlite
+.vs/learningCpp/v16/.suo
+.vs/learningCpp/v16/Browse.VC.db
+

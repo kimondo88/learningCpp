@@ -1,11 +1,13 @@
 #include <iostream>
 #include <Windows.h>
 #include <chrono>
+#include <thread>
 
 #pragma comment(lib, "User32.lib")
 
 using std::wstring;
-
+using std::this_thread::sleep_for;
+using std::chrono::milliseconds;
 wstring tetromino[7];
 
 int nFieldWidth = 12;
@@ -109,17 +111,45 @@ int main()
     int nCurrentRotation = 0;
     int nCurrentX = nFieldWidth / 2;
     int nCurrentY = 0;
+    bool bKey[4];
 
     //game loop
     while(!bGameOver)
     {
-        // game timing ########################
-
+        sleep_for(milliseconds(50));
 
         // input ##############################
-
+        for (int k = 0; k < 4; k++)                     //R L    D Z
+            bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
         // Game Logic #########################
-
+        if(bKey[1])
+        {
+            if(DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX -1, nCurrentY))
+            {
+                nCurrentX = nCurrentX - 1;
+            }
+        }
+        if(bKey[0])
+        {
+            if(DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX +1, nCurrentY))
+            {
+                nCurrentX = nCurrentX + 1;
+            }
+        }
+        if(bKey[2])
+        {
+            if(DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY+1))
+            {
+                nCurrentY = nCurrentY + 1;
+            }
+        }
+        if(bKey[3])
+        {
+            if(DoesPieceFit(nCurrentPiece, nCurrentRotation+1, nCurrentX, nCurrentY+1))
+            {
+                nCurrentRotation = nCurrentRotation+1;
+            }
+        }
 
         // render output ######################
 
