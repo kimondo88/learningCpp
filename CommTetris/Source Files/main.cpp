@@ -8,6 +8,9 @@
 using std::wstring;
 using std::this_thread::sleep_for;
 using std::chrono::milliseconds;
+
+#include <stdio.h>
+
 wstring tetromino[7];
 
 int nFieldWidth = 12;
@@ -43,7 +46,7 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY )
             {
                 if(nPosY + py >= 0 && nPosY + py < nFieldHeight)
                 {
-                    if (tetromino[nTetromino][pi] == L'X' && pField[fi] != 0)
+                    if (tetromino[nTetromino][pi] != L'.' && pField[fi] != 0)
                         return false; // fails in first hit
                 }
             } 
@@ -107,48 +110,68 @@ int main()
 
     bool bGameOver = false;
 
-    int nCurrentPiece = 0;
+    int nCurrentPiece = 1;
     int nCurrentRotation = 0;
     int nCurrentX = nFieldWidth / 2;
     int nCurrentY = 0;
-    bool bKey[4];
 
-    //game loop
-    while(!bGameOver)
+    bool bKey[4];
+    bool bRotateHold = false;
+
+    int nSpeed = 20;
+    int nSpeedCounter = 0;
+    bool bForceDown = false;
+
+    while(!bGameOver)     //game loop
     {
-        sleep_for(milliseconds(50));
+        sleep_for(milliseconds(50)); // game tick
+        nSpeedCounter++;
+        bForceDown = (nSpeedCounter == nSpeed);
 
         // input ##############################
         for (int k = 0; k < 4; k++)                     //R L    D Z
             bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
         // Game Logic #########################
-        if(bKey[1])
+        nCurrentX -= (bKey[1] && (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY))) ? 1 : 0;
+        nCurrentX += (bKey[0] && (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY))) ? 1 : 0;
+        nCurrentY += (bKey[2] && (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))) ? 1 : 0;
+        if (bKey[3])
         {
-            if(DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX -1, nCurrentY))
-            {
-                nCurrentX = nCurrentX - 1;
-            }
+            nCurrentRotation += (!bRotateHold && (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1))) ? 1 : 0;
+            bRotateHold = true;
         }
-        if(bKey[0])
+        else
+            bRotateHold = false;
+        
+        if(bForceDown)
         {
-            if(DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX +1, nCurrentY))
+            nSpeedCounter = 0;
+            if (DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY+1))
+                nCurrentY++; // it can so do it
+            else
             {
-                nCurrentX = nCurrentX + 1;
+                // lock the current piece in the field           
+                for (int px = 0; px < 4; px++)
+                    for (int py = 0; py < 4; py++)
+                        if ( tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
+                            pField[(nCurrentY + py )*nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
+                
+                // check have we got lines
+                for(int py = 0; py < 4 ; py++)
+                    if (nCurrentY + py < nFieldHeight - 1)
+                    {
+
+                    }
+                // choose next piece
+                nCurrentRotation = 0;
+                nCurrentX = nFieldWidth / 2;
+                nCurrentY = 0;
+                nCurrentPiece = rand() % 7;
+
+                //if piece does not fit
+                bGameOver = !DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
             }
-        }
-        if(bKey[2])
-        {
-            if(DoesPieceFit(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY+1))
-            {
-                nCurrentY = nCurrentY + 1;
-            }
-        }
-        if(bKey[3])
-        {
-            if(DoesPieceFit(nCurrentPiece, nCurrentRotation+1, nCurrentX, nCurrentY+1))
-            {
-                nCurrentRotation = nCurrentRotation+1;
-            }
+            
         }
 
         // render output ######################
@@ -162,7 +185,7 @@ int main()
         //draw current piece
         for (int px = 0; px < 4; px++)
             for (int py = 0; py < 4; py++)
-                if ( tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] == L'X')
+                if ( tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
                     screen[(nCurrentY + py +2)*nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece +65;
         // display frame
         //screen[nScreenWidth * nScreenHeight -1] = '\0';
