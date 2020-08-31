@@ -2,12 +2,15 @@
 #include <Windows.h>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #pragma comment(lib, "User32.lib")
 
 using std::wstring;
 using std::this_thread::sleep_for;
 using std::chrono::milliseconds;
+using std::vector;
+using std::cout;
 
 #include <stdio.h>
 
@@ -121,7 +124,9 @@ int main()
     int nSpeed = 20;
     int nSpeedCounter = 0;
     bool bForceDown = false;
-
+    int nPieceCount = 10;
+    int nScore = 0;
+    vector<int> vLines;
     while(!bGameOver)     //game loop
     {
         sleep_for(milliseconds(50)); // game tick
@@ -156,12 +161,32 @@ int main()
                         if ( tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
                             pField[(nCurrentY + py )*nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
                 
+                nPieceCount++;
+                if (nPieceCount % 10 == 0)
+                    if (nSpeed >= 10) nSpeed--;
+
                 // check have we got lines
                 for(int py = 0; py < 4 ; py++)
                     if (nCurrentY + py < nFieldHeight - 1)
                     {
+                        bool bLine = true;
+                        for (int px = 1; px < nFieldWidth ; px++)
+                            bLine &= (pField[(nCurrentY + py) * nFieldWidth + px]) != 0;
 
+                        if (bLine)
+                        {
+                            // remove line set to =
+                            for (int px = 1; px < nFieldWidth; px++)
+                                pField[(nCurrentY + py)* nFieldWidth + px] = 8;
+
+                            vLines.push_back(nCurrentY + py);
+                        }
                     }
+
+                //score the player
+                nScore += 25;
+                if(!vLines.empty()) nScore += (1 << vLines.size()) * 100;
+
                 // choose next piece
                 nCurrentRotation = 0;
                 nCurrentX = nFieldWidth / 2;
@@ -187,11 +212,38 @@ int main()
             for (int py = 0; py < 4; py++)
                 if ( tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
                     screen[(nCurrentY + py +2)*nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece +65;
+
+        //draw score
+        swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"Score: %8d", nScore);
+
+
+        if (!vLines.empty())
+        {
+            //Display Frame(to draw lines)
+            WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 },
+            &dwBytesWritten);
+            sleep_for(milliseconds(400)); // delay
+
+            for (auto &v : vLines)
+                for (int px = 1; px < nFieldWidth - 1; px++)
+                {
+                    for (int py = v; py > 0 ; py--)
+                        pField[py * nFieldWidth + px] = pField[(py - 1) * nFieldWidth + px];
+                        pField[px] = 0;
+                }
+
+            vLines.clear();
+        }
+
         // display frame
         //screen[nScreenWidth * nScreenHeight -1] = '\0';
         WriteConsoleOutputCharacterW(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 },
         &dwBytesWritten);
     }
 
+    CloseHandle(hConsole);
+
+    cout << "\n\t\tGame Over!! Score:" << nScore << "\n\n";
+    system("pause");
     return 0;
 }
