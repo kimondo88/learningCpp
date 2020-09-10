@@ -1,9 +1,13 @@
 #include <iostream>
 #include "..\olcConsoleGameEngine.h"
 #include <stack>
+#include <vector>
+
+using std::vector;
 using std::pair;
 using std::stack;
 using std::make_pair;
+using std::rand;
 
 class olc_Maze : public olcConsoleGameEngine
 {
@@ -54,13 +58,53 @@ protected:
 
     virtual bool OnUserUpdate(float fElapsedTime)
     {
+        auto offset = [&](int x, int y)
+        {
+            return (m_stack.top().second + y)* m_nMazeWidth + (m_stack.top().first +x) ;
+        };
+
         // maze algorithm.
         if (m_nVisitedCells < m_nMazeWidth * m_nMazeHeight)
         {
             //step 1: Create set of unvisited neighbours
+            vector<int> neighbours;
+            // North neighbour
+            if(m_stack.top().second > 0 && (m_maze[offset(0, -1)] & CELL_VISITED == 0))
+                    neighbours.push_back(0);
+            // east neighbour
+            if(m_stack.top().first < m_nMazeWidth - 1 && (m_maze[offset(1,0)] & CELL_VISITED == 0))
+                    neighbours.push_back(1);
+            // south neighbour
+            if(m_stack.top().first > 0 && (m_maze[offset(0,1)] & CELL_VISITED == 0))
+                    neighbours.push_back(2);
+            // west neighbour
+            if(m_stack.top().second > m_nMazeWidth - 1 && (m_maze[offset(-1,0)] & CELL_VISITED == 0))
+                    neighbours.push_back(3);
 
-            // north neighbour
-            
+            if (!neighbours.empty())
+            {
+                // choose avaialbe neighbour at random
+                int next_cell_dir = neighbours[rand() % neighbours.size()];
+
+                // create a path between nieghbour and current cell
+                switch (next_cell_dir)
+                {
+                case 0: // North
+                    m_maze[offset(0,0)] |= CELL_PATH_N;
+                    m_maze[offset(0, -1)] |= CELL_PATH_S;
+                    m_stack.push(make_pair((m_stack.top().first + 0), (m_stack.top().second - 1)));
+
+                    break;
+                case 1: // East
+                    break;
+                case 2: // South
+                    break;
+                case 3: // West
+                    break;
+                }
+
+            }
+
         }
 
         // draw stuff
