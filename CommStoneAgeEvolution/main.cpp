@@ -1,8 +1,11 @@
 #include <iostream>
 #include "..\olcConsoleGameEngine.h"
 #include <vector>
+#include <random>
+#include <chrono>
 
 using std::vector;
+using std::mt19937;
 
 class olcStoneAgeEvo : public olcConsoleGameEngine
 {
@@ -21,6 +24,21 @@ private:
     int m_nControl; 
     int m_nEvent;
 
+    enum
+    {
+        CELL_TEST = 0x010,
+        CELL_HUMAN_NPC = 0x38F,
+    };
+
+    virtual bool Populate()
+    {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        mt19937 random(seed);
+        m_stone[random() % 100] = CELL_TEST;
+
+        return true;
+    };
+
 protected:
     virtual bool OnUserCreate()
     {
@@ -35,6 +53,17 @@ protected:
 
         memset(m_stone, 0x00, m_nStoneWidth * m_nStoneHeight);
 
+        // create basic npcs
+        Populate();
+        // populate and create world
+
+        
+        //Draw borders for Game Screen windows
+        DrawLine(9, 9, 40, 9, PIXEL_SOLID, FG_WHITE);
+        DrawLine(9, 40, 40, 40, PIXEL_SOLID, FG_WHITE);
+        DrawLine(9, 9, 9, 40, PIXEL_SOLID, FG_WHITE);
+        DrawLine(40, 9, 40, 40, PIXEL_SOLID, FG_WHITE);
+
         return true;
     }
 
@@ -46,14 +75,21 @@ protected:
 
         // clear Event interface window
 
+
+        //npc walks and do smth
+
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                Draw(x + m_nBorder, y + m_nBorder, PIXEL_SOLID, FG_GREEN);
+                Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)
             for( int y = 0 ; y < 2 ; y++)
+            {
                 DrawString(x + m_nBorder + m_nControl, y + m_nBorder , L"Welcome", FG_RED);
+                //if  (y == 3)
+                //    DrawString(x + m_nBorder + m_nControl, y + m_nBorder , , FG_RED);
+            }
         // Draw Event Interface Window
         for (int x = 0; x < 1; x++)
             for( int y = 0 ; y < 2 ; y++)
