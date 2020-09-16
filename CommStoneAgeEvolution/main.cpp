@@ -3,9 +3,11 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <string>
 
 using std::vector;
 using std::mt19937;
+using std::to_wstring; 
 
 class olcStoneAgeEvo : public olcConsoleGameEngine
 {
@@ -34,8 +36,7 @@ private:
     {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         mt19937 random(seed);
-        m_stone[random() % 100] = CELL_TEST;
-
+        m_stone[random() % 900] = CELL_TEST;
         return true;
     };
 
@@ -86,7 +87,7 @@ protected:
         for (int x = 0; x < 1; x++)
             for( int y = 0 ; y < 2 ; y++)
             {
-                DrawString(x + m_nBorder + m_nControl, y + m_nBorder , L"Welcome", FG_RED);
+                DrawString(x + m_nBorder + m_nControl, y + m_nBorder , to_wstring(555), FG_RED);
                 //if  (y == 3)
                 //    DrawString(x + m_nBorder + m_nControl, y + m_nBorder , , FG_RED);
             }
