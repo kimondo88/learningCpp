@@ -16,7 +16,11 @@ public:
     {
         m_sAppName = L"StoneAgeEvolution";
     }
-
+    ~olcStoneAgeEvo()
+    {
+        delete[] m_stone;
+    }
+    
 private:
     int m_nStoneWidth;
     int m_nStoneHeight;
@@ -28,7 +32,7 @@ private:
 
     enum
     {
-        CELL_TEST = 0x010,
+        CELL_WOOD= 0x012,
         CELL_HUMAN_NPC = 0x38F,
     };
 
@@ -36,7 +40,8 @@ private:
     {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         mt19937 random(seed);
-        m_stone[random() % 900] = CELL_TEST;
+        for ( int i = 0; i < 5 ; i++)
+            m_stone[random() % 900] = CELL_HUMAN_NPC;
         return true;
     };
 
@@ -70,6 +75,8 @@ protected:
 
     virtual bool OnUserUpdate(float fElapsedTime)
     {
+        if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
+            OnUserDestroy();
         //clear game screen window
         Fill(10, 10, m_nStoneWidth, m_nStoneHeight, L' ');
         // clear Player interface window
@@ -82,7 +89,8 @@ protected:
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
+                if(m_stone[y*m_nStoneWidth + x] == CELL_HUMAN_NPC )
+                    Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)
             for( int y = 0 ; y < 2 ; y++)
@@ -95,6 +103,17 @@ protected:
         for (int x = 0; x < 1; x++)
             for( int y = 0 ; y < 2 ; y++)
                 DrawString(x + m_nBorder + m_nControl/2, y + m_nBorder + m_nEvent , L"Event", FG_BLUE);
+        return true;
+        
+    }
+
+    virtual bool OnUserDestroy()
+    {
+        delete[] m_bufScreen;
+        delete[] m_stone;
+		SetConsoleActiveScreenBuffer(m_hOriginalConsole);
+		m_cvGameFinished.notify_one();
+        m_stone = nullptr;
         return true;
     }
 };
