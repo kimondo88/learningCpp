@@ -1,5 +1,6 @@
 #include <iostream>
 #include "..\olcConsoleGameEngine.h"
+#include "class.h"
 #include <vector>
 #include <random>
 #include <chrono>
@@ -40,8 +41,12 @@ private:
     {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         mt19937 random(seed);
+        int c;
         for ( int i = 0; i < 5 ; i++)
-            m_stone[random() % 900] = CELL_HUMAN_NPC;
+        {
+            c = random() % 900 ;
+            m_stone[c] = CELL_HUMAN_NPC;
+        }
         return true;
     };
 
