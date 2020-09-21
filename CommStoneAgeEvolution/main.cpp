@@ -30,6 +30,7 @@ private:
     int m_nBorder;
     int m_nControl; 
     int m_nEvent;
+    vector<npc> *m_vCharacters;
 
     enum
     {
@@ -37,18 +38,29 @@ private:
         CELL_HUMAN_NPC = 0x38F,
     };
 
-    virtual bool Populate()
+    virtual bool Populate(vector<npc> *m_vCharacters)
     {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         mt19937 random(seed);
         int c;
+
+        // add new npc to vectors
         for ( int i = 0; i < 5 ; i++)
         {
             c = random() % 900 ;
-            m_stone[c] = CELL_HUMAN_NPC;
+            m_vCharacters->push_back(npc(c, 100));
         }
         return true;
-    };
+    }
+
+    virtual void RefreshPosition(vector<npc> *m_vCharacters)
+    {
+        for ( auto i = m_vCharacters->begin(); i != m_vCharacters->end(); ++i)
+        {
+            npc x = *i;
+            m_stone[x.GetCoordinates()] = x.GetSymbol();
+        }
+    }
 
 protected:
     virtual bool OnUserCreate()
@@ -57,6 +69,7 @@ protected:
         m_nStoneWidth = 30;
         m_nStoneHeight = 30;
         m_stone = new int[m_nStoneWidth * m_nStoneHeight];
+        m_vCharacters = new vector<npc>[30];
 
         m_nBorder = 10;
         m_nControl = 50;
@@ -65,7 +78,7 @@ protected:
         memset(m_stone, 0x00, m_nStoneWidth * m_nStoneHeight);
 
         // create basic npcs
-        Populate();
+        Populate(m_vCharacters);
         // populate and create world
 
         
@@ -82,6 +95,7 @@ protected:
     {
         if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
             OnUserDestroy();
+        RefreshPosition(m_vCharacters);
         //clear game screen window
         Fill(10, 10, m_nStoneWidth, m_nStoneHeight, L' ');
         // clear Player interface window
@@ -94,7 +108,7 @@ protected:
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                if(m_stone[y*m_nStoneWidth + x] == CELL_HUMAN_NPC )
+                if(m_stone[y*m_nStoneWidth + x] == 0x58)
                     Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)

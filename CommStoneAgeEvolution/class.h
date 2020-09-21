@@ -3,8 +3,8 @@ class npc
 public: 
     npc(int m_nCoordinates = 1, int m_nHealth = 100)
     {
-        //this -> m_nCoordinates = m_nCoordinates;
-        //this -> m_nHealth = m_nHealth;
+        this -> m_nCoordinates = m_nCoordinates;
+        this -> m_nHealth = m_nHealth;
     };
 
     virtual int GetSymbol()
