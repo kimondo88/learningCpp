@@ -63,6 +63,58 @@ private:
         }
     }
 
+    virtual void AttemptMove(vector<npc> *m_vCharacters)
+    {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        mt19937 random(seed);
+
+        for ( auto i = m_vCharacters->begin(); i != m_vCharacters->end(); ++i)
+        {
+            switch(random() % 4)
+            {
+                case 0:
+                    //check if npc can move and not collide with left
+                    if ((m_stone[i->GetCoordinates() + LEFT] == 0x00) && (i->GetCoordinates() % 30) != 0)
+                    {
+                        m_stone[i->GetCoordinates()] = 0x00;
+                        i->MoveLEFT();
+                    }
+                    break;
+            
+                case 1:
+                    //check if npc can move and not collide with right
+                    if ((m_stone[i->GetCoordinates() + RIGHT] == 0x00) && ((i->GetCoordinates() + 1 % 30) != 0))
+                    {
+                        m_stone[i->GetCoordinates()] = 0x00;
+                        i->MoveRIGHT();
+                    }
+                    break;
+
+                case 2:
+                    //check if ncp can move and not collide with up
+                    if (m_stone[i->GetCoordinates() + UP] == 0x00 && (i->GetCoordinates() >= DOWN))
+                    {
+                        m_stone[i->GetCoordinates()] = 0x00;
+                        i->MoveUP();
+                    }
+                    break;
+
+                case 3:
+                    //check if ncp can move and not collide with DOWN
+                    if (m_stone[i->GetCoordinates() + DOWN] == 0x00 && (i->GetCoordinates() < 870))
+                    {
+                        m_stone[i->GetCoordinates()] = 0x00;
+                        i->MoveDOWN();
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+    }
+
 protected:
     virtual bool OnUserCreate()
     {
@@ -70,7 +122,7 @@ protected:
         m_nStoneWidth = 30;
         m_nStoneHeight = 30;
         m_stone = new int[m_nStoneWidth * m_nStoneHeight];
-        m_vCharacters = new vector<npc>[30];
+        m_vCharacters = new vector<npc>;
 
         m_nBorder = 10;
         m_nControl = 50;
@@ -94,9 +146,12 @@ protected:
 
     virtual bool OnUserUpdate(float fElapsedTime)
     {
+        RefreshPosition(m_vCharacters);
         if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
             OnUserDestroy();
-        RefreshPosition(m_vCharacters);
+        if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
+            AttemptMove(m_vCharacters);
+        
         //clear game screen window
         Fill(10, 10, m_nStoneWidth, m_nStoneHeight, L' ');
         // clear Player interface window
@@ -109,7 +164,7 @@ protected:
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol())
+                //if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol())
                     Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)
@@ -136,6 +191,14 @@ protected:
         m_stone = nullptr;
         return true;
     }
+
+    enum MOVE
+    {
+        UP = -30,
+        LEFT = -1,
+        RIGHT = 1,
+        DOWN = 30,
+    };
 };
 
 int main()

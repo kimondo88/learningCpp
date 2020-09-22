@@ -31,27 +31,25 @@ public:
         return m_nHealth;
     }
     
-    virtual void SetCoordinates(int x, int y)
+    virtual void MoveLEFT()
     {
+        m_nCoordinates += LEFT;
+    }
 
-        switch(MOVE)
-        {
-            case UP:
-                m_nCoordinates += UP;
-                break;
-            case LEFT:
-                m_nCoordinates += LEFT;
-                break;
-            case RIGHT:
-                m_nCoordinates += RIGHT;
-                break;
-            case DOWN:
-                m_nCoordinates += DOWN;
-                break;
-            default:
-                break;
-        }
-        
+    
+    virtual void MoveRIGHT()
+    {
+        m_nCoordinates += RIGHT;
+    }
+
+    virtual void MoveUP()
+    {
+        m_nCoordinates += UP;
+    }
+
+    virtual void MoveDOWN()
+    {
+        m_nCoordinates += DOWN;
     }
 
 protected:
