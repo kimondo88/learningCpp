@@ -21,7 +21,8 @@ public:
     {
         delete[] m_stone;
     }
-    
+    npc symbolNpc;
+
 private:
     int m_nStoneWidth;
     int m_nStoneHeight;
@@ -108,7 +109,7 @@ protected:
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                if(m_stone[y*m_nStoneWidth + x] == 0x58)
+                if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol())
                     Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)
