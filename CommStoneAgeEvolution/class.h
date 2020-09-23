@@ -31,25 +31,9 @@ public:
         return m_nHealth;
     }
     
-    virtual void MoveLEFT()
+    virtual void Move(int MOVE)
     {
-        m_nCoordinates += LEFT;
-    }
-
-    
-    virtual void MoveRIGHT()
-    {
-        m_nCoordinates += RIGHT;
-    }
-
-    virtual void MoveUP()
-    {
-        m_nCoordinates += UP;
-    }
-
-    virtual void MoveDOWN()
-    {
-        m_nCoordinates += DOWN;
+        m_nCoordinates += MOVE;
     }
 
 protected:
@@ -60,13 +44,6 @@ protected:
         symbol = 0x58,
     };
 
-    enum MOVE
-    {
-        UP = -30,
-        LEFT = -1,
-        RIGHT = 1,
-        DOWN = 30,
-    };
 };
 
 class resources

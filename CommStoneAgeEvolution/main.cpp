@@ -31,6 +31,8 @@ private:
     int m_nBorder;
     int m_nControl; 
     int m_nEvent;
+    bool DKeyHold = false;
+
     vector<npc> *m_vCharacters;
 
     enum
@@ -58,8 +60,7 @@ private:
     {
         for ( auto i = m_vCharacters->begin(); i != m_vCharacters->end(); ++i)
         {
-            npc x = *i;
-            m_stone[x.GetCoordinates()] = x.GetSymbol();
+            m_stone[i->GetCoordinates()] = i->GetSymbol();
         }
     }
 
@@ -74,28 +75,28 @@ private:
             {
                 case 0:
                     //check if npc can move and not collide with left
-                    if ((m_stone[i->GetCoordinates() + LEFT] == 0x00) && (i->GetCoordinates() % 30) != 0)
+                    if ((m_stone[i->GetCoordinates() + LEFT] == 0x00) && (i->GetCoordinates() % m_nStoneWidth) != 0)
                     {
                         m_stone[i->GetCoordinates()] = 0x00;
-                        i->MoveLEFT();
+                        i->Move(LEFT);
                     }
                     break;
             
                 case 1:
                     //check if npc can move and not collide with right
-                    if ((m_stone[i->GetCoordinates() + RIGHT] == 0x00) && ((i->GetCoordinates() + 1 % 30) != 0))
+                    if ((m_stone[i->GetCoordinates() + RIGHT] == 0x00) && (((i->GetCoordinates() + 1 ) % m_nStoneWidth) != 0))
                     {
                         m_stone[i->GetCoordinates()] = 0x00;
-                        i->MoveRIGHT();
+                        i->Move(RIGHT);
                     }
                     break;
 
                 case 2:
                     //check if ncp can move and not collide with up
-                    if (m_stone[i->GetCoordinates() + UP] == 0x00 && (i->GetCoordinates() >= DOWN))
+                    if (m_stone[i->GetCoordinates() + UP] == 0x00 && (i->GetCoordinates() >= m_nStoneWidth))
                     {
                         m_stone[i->GetCoordinates()] = 0x00;
-                        i->MoveUP();
+                        i->Move(UP);
                     }
                     break;
 
@@ -104,7 +105,7 @@ private:
                     if (m_stone[i->GetCoordinates() + DOWN] == 0x00 && (i->GetCoordinates() < 870))
                     {
                         m_stone[i->GetCoordinates()] = 0x00;
-                        i->MoveDOWN();
+                        i->Move(DOWN);
                     }
                     break;
 
@@ -146,12 +147,18 @@ protected:
 
     virtual bool OnUserUpdate(float fElapsedTime)
     {
-        RefreshPosition(m_vCharacters);
         if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
             OnUserDestroy();
-        if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
+        if (GetAsyncKeyState((unsigned short)'D') & 0x8000 && !DKeyHold)
+        {
             AttemptMove(m_vCharacters);
-        
+            DKeyHold = true;
+        }
+        else
+            DKeyHold = false;
+
+        RefreshPosition(m_vCharacters);
+
         //clear game screen window
         Fill(10, 10, m_nStoneWidth, m_nStoneHeight, L' ');
         // clear Player interface window
