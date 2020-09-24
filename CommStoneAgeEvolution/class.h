@@ -46,10 +46,23 @@ protected:
 
 };
 
-class resources
+class resources 
 {
 public:
-    resources(int m_nCoordinates, int m_nQuantity = 100, float m_nWeight = 1.0f);
+    resources(int m_nCoordinates, int m_nQuantity = 100, float m_nWeight = 1.0f)
+    {
+         if (m_nCoordinates > 899)
+            m_nCoordinates = 899;
+        else if (m_nCoordinates < 0)
+            m_nCoordinates = 0;
+        else
+            this -> m_nCoordinates = m_nCoordinates;
+
+        if(m_nQuantity < 0 || m_nQuantity > 300)
+            m_nQuantity = 100;
+        else 
+            this -> m_nQuantity = m_nQuantity;
+    }
     virtual int GetCoordinates()
     {
         return m_nCoordinates;

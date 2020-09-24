@@ -160,7 +160,7 @@ protected:
         RefreshPosition(m_vCharacters);
 
         //clear game screen window
-        Fill(10, 10, m_nStoneWidth, m_nStoneHeight, L' ');
+        Fill(m_nBorder, m_nBorder, m_nStoneWidth+10, m_nStoneHeight+10, L' ');
         // clear Player interface window
 
         // clear Event interface window
@@ -171,7 +171,7 @@ protected:
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                //if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol())
+                if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol())
                     Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)
