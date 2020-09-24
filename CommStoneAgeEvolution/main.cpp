@@ -9,6 +9,8 @@
 using std::vector;
 using std::mt19937;
 using std::to_wstring; 
+using std::string;
+using std::pair;
 
 class olcStoneAgeEvo : public olcConsoleGameEngine
 {
@@ -20,6 +22,7 @@ public:
     ~olcStoneAgeEvo()
     {
         delete[] m_stone;
+        delete m_vCharacters;
     }
     npc symbolNpc;
 
