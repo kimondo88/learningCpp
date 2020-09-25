@@ -44,13 +44,29 @@ public:
         m_nCoordinates += MOVE;
     }
 
-    virtual resources Gather(resources toGather, vector<pair<string, int>> *inventory)
+    virtual bool Gather(resources &toGather, vector<pair<string, int>> *inventory)
     {
         // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
-        if (toGather.GetWeight()  - m_fStrength > 0.0f)
+        if (toGather.GetWeight()*m_nSpeed  - m_fStrength > 0.0f)
         {
-            toGather.RemoveQuantity(m_nSpeed);
-            m_fStrength -= toGather.GetWeight()*m_nSpeed;
+            if (toGather.RemoveQuantity(m_nSpeed))
+            {
+                m_fStrength -= toGather.GetWeight()*m_nSpeed;
+                inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*m_nSpeed));
+                return true;
+            }
+            else
+            {
+                m_fStrength -= toGather.GetWeight()*toGather.GetQuantity();
+                inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*toGather.GetQuantity()));
+                toGather.RemoveQuantity(toGather.GetQuantity());
+                return false;
+            }
+        }
+        else
+        {
+            // make npc go store the inventory into warehouse
+            return true;
         }
     }
 
@@ -89,6 +105,12 @@ public:
         this -> m_fWeight = m_fWeight;
         this -> m_sName = m_sName;
     }
+
+    virtual string GetName()
+    {
+        return m_sName;
+    }
+
     virtual int GetCoordinates()
     {
         return m_nCoordinates;
@@ -112,8 +134,14 @@ public:
     virtual bool RemoveQuantity(int quantity)
     {
         if (m_nQuantity >= quantity)
+        {
             m_nQuantity -= quantity;
+            return true;
+        }
+        else 
+            return false;
     }
+
 protected:
     int m_nCoordinates;
     int m_nQuantity;

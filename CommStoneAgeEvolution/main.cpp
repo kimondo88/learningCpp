@@ -11,6 +11,7 @@ using std::mt19937;
 using std::to_wstring; 
 using std::string;
 using std::pair;
+using std::make_pair;
 
 class olcStoneAgeEvo : public olcConsoleGameEngine
 {
