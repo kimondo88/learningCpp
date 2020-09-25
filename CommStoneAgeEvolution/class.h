@@ -1,3 +1,12 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using std::vector;
+using std::string;
+using std::pair;
+using std::make_pair;
+
 class npc 
 {
 public: 
@@ -39,44 +48,34 @@ public:
         return m_nHealth;
     }
     
+    virtual float GetStrength()
+    {
+        return m_fStrength;
+    }
+
+    virtual int GetSpeed()
+    {
+        return m_nSpeed;
+    }
+
     virtual void Move(int MOVE)
     {
         m_nCoordinates += MOVE;
     }
 
-    virtual bool Gather(resources &toGather, vector<pair<string, int>> *inventory)
+    virtual void SetStrength(float x)
     {
-        // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
-        if (toGather.GetWeight()*m_nSpeed  - m_fStrength > 0.0f)
-        {
-            if (toGather.RemoveQuantity(m_nSpeed))
-            {
-                m_fStrength -= toGather.GetWeight()*m_nSpeed;
-                inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*m_nSpeed));
-                return true;
-            }
-            else
-            {
-                m_fStrength -= toGather.GetWeight()*toGather.GetQuantity();
-                inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*toGather.GetQuantity()));
-                toGather.RemoveQuantity(toGather.GetQuantity());
-                return false;
-            }
-        }
-        else
-        {
-            // make npc go store the inventory into warehouse
-            return true;
-        }
+        m_fStrength -= x;
     }
+
+    vector<pair<string, int>> *inventory;
+
 
 protected:
     int m_nCoordinates;
     int m_nHealth;
     int m_nSpeed;
     float m_fStrength;
-
-    vector<pair<string, int>> *inventory;
 
     enum
     {

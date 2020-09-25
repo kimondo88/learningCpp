@@ -38,6 +38,7 @@ private:
     bool DKeyHold = false;
 
     vector<npc> *m_vCharacters;
+    vector<resources> *m_vResources;
 
     enum
     {
@@ -45,7 +46,7 @@ private:
         CELL_HUMAN_NPC = 0x38F,
     };
 
-    virtual bool Populate(vector<npc> *m_vCharacters)
+    virtual bool Populate(vector<npc> *m_vCharacters, vector<resources> *m_vResources)
     {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         mt19937 random(seed);
@@ -57,12 +58,26 @@ private:
             c = random() % 900 ;
             m_vCharacters->push_back(npc(c, 100));
         }
+
+        for ( int i = 0; i < 5 ; i++)
+        {
+            c = random() % 900 ;
+            m_vResources->push_back(resources(c, 100));
+        }
         return true;
     }
 
     virtual void RefreshPosition(vector<npc> *m_vCharacters)
     {
         for ( auto i = m_vCharacters->begin(); i != m_vCharacters->end(); ++i)
+        {
+            m_stone[i->GetCoordinates()] = i->GetSymbol();
+        }
+    }
+
+    virtual void RefreshPosition(vector<resources> *m_vResources)
+    {
+        for ( auto i = m_vResources->begin(); i != m_vResources->end(); ++i)
         {
             m_stone[i->GetCoordinates()] = i->GetSymbol();
         }
@@ -120,6 +135,32 @@ private:
 
     }
 
+    virtual bool Gather(resources &toGather,npc &Gatherer)
+    {
+        // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
+        if (toGather.GetWeight()*Gatherer.GetSpeed() - Gatherer.GetStrength() > 0.0f)
+        {
+            if (toGather.RemoveQuantity(Gatherer.GetSpeed()))
+            {
+                Gatherer.SetStrength(toGather.GetWeight()*Gatherer.GetSpeed());
+                Gatherer.inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*Gatherer.GetSpeed()));
+                return true;
+            }
+            else
+            {
+                Gatherer.SetStrength(toGather.GetWeight()*toGather.GetQuantity());
+                Gatherer.inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*toGather.GetQuantity()));
+                toGather.RemoveQuantity(toGather.GetQuantity());
+                return false;
+            }
+        }
+        else
+        {
+            // make npc go store the inventory into warehouse
+            return true;
+        }
+    }
+
 protected:
     virtual bool OnUserCreate()
     {
@@ -128,6 +169,7 @@ protected:
         m_nStoneHeight = 30;
         m_stone = new int[m_nStoneWidth * m_nStoneHeight];
         m_vCharacters = new vector<npc>;
+        m_vResources = new vector<resources>;
 
         m_nBorder = 10;
         m_nControl = 50;
@@ -136,9 +178,9 @@ protected:
         memset(m_stone, 0x00, m_nStoneWidth * m_nStoneHeight);
 
         // create basic npcs
-        Populate(m_vCharacters);
+        Populate(m_vCharacters, m_vResources);
         // populate and create world
-
+        RefreshPosition(m_vResources);
         
         //Draw borders for Game Screen windows
         DrawLine(9, 9, 40, 9, PIXEL_SOLID, FG_WHITE);
