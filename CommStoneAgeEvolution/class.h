@@ -6,6 +6,7 @@ using std::vector;
 using std::string;
 using std::pair;
 using std::make_pair;
+using std::wstring;
 
 class npc 
 {
@@ -68,7 +69,7 @@ public:
         m_fStrength -= x;
     }
 
-    vector<pair<string, int>> *inventory;
+    vector<pair<wstring, int>> *inventory;
 
 
 protected:
@@ -87,7 +88,7 @@ protected:
 class resources 
 {
 public:
-    resources(int m_nCoordinates, int m_nQuantity = 100, float m_fWeight = 1.0f, string m_sName = "Tree")
+    resources(int m_nCoordinates = 0, int m_nQuantity = 100, float m_fWeight = 1.0f, wstring m_sName = L"Tree")
     {
          if (m_nCoordinates > 899)
             m_nCoordinates = 899;
@@ -105,7 +106,7 @@ public:
         this -> m_sName = m_sName;
     }
 
-    virtual string GetName()
+    virtual wstring GetName()
     {
         return m_sName;
     }
@@ -146,7 +147,7 @@ protected:
     int m_nQuantity;
     float m_fWeight;
 
-    string m_sName;
+    wstring m_sName;
 
     enum 
     {

@@ -20,12 +20,14 @@ public:
     {
         m_sAppName = L"StoneAgeEvolution";
     }
+
     ~olcStoneAgeEvo()
     {
         delete[] m_stone;
         delete m_vCharacters;
     }
     npc symbolNpc;
+    resources symbolResources;
 
 private:
     int m_nStoneWidth;
@@ -161,6 +163,16 @@ private:
         }
     }
 
+    //function npc do stuff - pick one to do.
+    virtual void DecideToDo(vector<npc> m_vCharacters, vector<resources> m_vResources)
+    {
+        for (auto i = m_vCharacters.begin(); i != m_vCharacters.end(); ++i)
+            for(auto r = m_vResources.begin(); r != m_vResources.end(); ++i)
+            {
+                Gather(*r, *i);
+            }
+    }
+
 protected:
     virtual bool OnUserCreate()
     {
@@ -205,6 +217,8 @@ protected:
 
         RefreshPosition(m_vCharacters);
 
+        //make npc gather stuff if gather false the delete resource then refresh position
+
         //clear game screen window
         Fill(m_nBorder, m_nBorder, m_nStoneWidth+10, m_nStoneHeight+10, L' ');
         // clear Player interface window
@@ -217,7 +231,7 @@ protected:
         // Draw Game Screen Window
         for (int x = 0; x < m_nStoneWidth; x++)
             for( int y = 0 ; y < m_nStoneHeight ; y++)
-                if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol())
+                if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol() || m_stone[y*m_nStoneWidth + x] == symbolResources.GetSymbol() )
                     Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
         for (int x = 0; x < 1; x++)
