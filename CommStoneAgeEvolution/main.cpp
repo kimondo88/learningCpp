@@ -58,7 +58,7 @@ private:
         for ( int i = 0; i < 5 ; i++)
         {
             c = random() % 900 ;
-            m_vCharacters->push_back(npc(c, 100));
+            m_vCharacters->push_back(npc(c, 100, 100.0f, 5));
         }
 
         for ( int i = 0; i < 5 ; i++)
@@ -166,11 +166,32 @@ private:
     //function npc do stuff - pick one to do.
     virtual void DecideToDo(vector<npc> m_vCharacters, vector<resources> m_vResources)
     {
+        int quantityOfRes = m_vResources.size();
         for (auto i = m_vCharacters.begin(); i != m_vCharacters.end(); ++i)
-            for(auto r = m_vResources.begin(); r != m_vResources.end(); ++i)
+            //for(auto r = m_vResources.begin(); r != m_vResources.end(); ++r)
             {
-                Gather(*r, *i);
+                int r = 0;
+                if(quantityOfRes >= 0)
+                {
+                    bool delResource = Gather(m_vResources.at(0+r), *i);
+                    TestCode(777, 0);
+                    if (!delResource)
+                    {
+                        //refresh position 
+                        m_vResources.erase(m_vResources.begin()+r);
+                        RefreshPosition(&m_vResources);
+                        TestCode(888, 1);
+                    }
+                    quantityOfRes--;
+                    r++; 
+                }
             }
+    }
+
+    //test code to check if something works
+    void TestCode(int testCode, int x)
+    {
+    DrawString(3+x + m_nBorder + m_nControl, 3+x + m_nBorder , to_wstring(testCode), FG_RED);
     }
 
 protected:
@@ -218,6 +239,13 @@ protected:
         RefreshPosition(m_vCharacters);
 
         //make npc gather stuff if gather false the delete resource then refresh position
+        if (GetAsyncKeyState((unsigned short)'E') & 0x8000 && !DKeyHold)
+        {
+            DecideToDo(*m_vCharacters, *m_vResources);
+            DKeyHold = true;
+        }
+        else
+            DKeyHold = false;
 
         //clear game screen window
         Fill(m_nBorder, m_nBorder, m_nStoneWidth+10, m_nStoneHeight+10, L' ');
