@@ -11,7 +11,7 @@ using std::wstring;
 class npc 
 {
 public: 
-    npc(int m_nCoordinates = 1, int m_nHealth = 100, float m_fStrength = 100.0f, int m_nSpeed = 2)
+    npc(int m_nCoordinates = 1, int m_nHealth = 100, int m_fStrength = 100, int m_nSpeed = 2)
     {
         if (m_nCoordinates > 899)
             m_nCoordinates = 899;
@@ -32,6 +32,8 @@ public:
 
         this -> m_nSpeed = m_nSpeed;
 
+        inventory = new vector<pair<wstring, int>>;
+
     };
 
     virtual int GetSymbol()
@@ -49,7 +51,7 @@ public:
         return m_nHealth;
     }
     
-    virtual float GetStrength()
+    virtual int GetStrength()
     {
         return m_fStrength;
     }
@@ -76,7 +78,7 @@ protected:
     int m_nCoordinates;
     int m_nHealth;
     int m_nSpeed;
-    float m_fStrength;
+    int m_fStrength;
 
     enum
     {
@@ -88,7 +90,7 @@ protected:
 class resources 
 {
 public:
-    resources(int m_nCoordinates = 0, int m_nQuantity = 100, float m_fWeight = 1.0f, wstring m_sName = L"Tree")
+    resources(int m_nCoordinates = 0, int m_nQuantity = 100, int m_fWeight = 1, wstring m_sName = L"Tree")
     {
          if (m_nCoordinates > 899)
             m_nCoordinates = 899;
@@ -145,7 +147,7 @@ public:
 protected:
     int m_nCoordinates;
     int m_nQuantity;
-    float m_fWeight;
+    int m_fWeight;
 
     wstring m_sName;
 

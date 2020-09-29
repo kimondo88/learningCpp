@@ -58,7 +58,7 @@ private:
         for ( int i = 0; i < 5 ; i++)
         {
             c = random() % 900 ;
-            m_vCharacters->push_back(npc(c, 100, 100.0f, 5));
+            m_vCharacters->push_back(npc(c, 100, 100, 150));
         }
 
         for ( int i = 0; i < 5 ; i++)
@@ -140,12 +140,15 @@ private:
     virtual bool Gather(resources &toGather,npc &Gatherer)
     {
         // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
-        if (toGather.GetWeight()*Gatherer.GetSpeed() - Gatherer.GetStrength() > 0.0f)
+        if ( Gatherer.GetStrength() - toGather.GetWeight()*Gatherer.GetSpeed() > 0)
         {
-            if (toGather.RemoveQuantity(Gatherer.GetSpeed()))
+            if (toGather.GetQuantity() > Gatherer.GetSpeed())
             {
+                toGather.RemoveQuantity(Gatherer.GetSpeed());
                 Gatherer.SetStrength(toGather.GetWeight()*Gatherer.GetSpeed());
                 Gatherer.inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*Gatherer.GetSpeed()));
+                TestCode(toGather.GetQuantity(), 5);
+                TestCode(Gatherer.GetStrength(), 6);
                 return true;
             }
             else
@@ -153,8 +156,11 @@ private:
                 Gatherer.SetStrength(toGather.GetWeight()*toGather.GetQuantity());
                 Gatherer.inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*toGather.GetQuantity()));
                 toGather.RemoveQuantity(toGather.GetQuantity());
+                TestCode(toGather.GetQuantity(), 5);
+                TestCode(Gatherer.GetStrength(), 6);
                 return false;
             }
+            return true;
         }
         else
         {
@@ -167,6 +173,8 @@ private:
     virtual void DecideToDo(vector<npc> m_vCharacters, vector<resources> m_vResources)
     {
         int quantityOfRes = m_vResources.size();
+        //TestCode(quantityOfRes, 2);
+        
         for (auto i = m_vCharacters.begin(); i != m_vCharacters.end(); ++i)
             //for(auto r = m_vResources.begin(); r != m_vResources.end(); ++r)
             {
@@ -184,6 +192,7 @@ private:
                     }
                     quantityOfRes--;
                     r++; 
+                    TestCode(m_vResources.at(0+r).GetQuantity(), 2);
                 }
             }
     }
@@ -239,18 +248,19 @@ protected:
         RefreshPosition(m_vCharacters);
 
         //make npc gather stuff if gather false the delete resource then refresh position
-        if (GetAsyncKeyState((unsigned short)'E') & 0x8000 && !DKeyHold)
+        if (GetAsyncKeyState((unsigned short)'E') & 0x8000)
         {
             DecideToDo(*m_vCharacters, *m_vResources);
-            DKeyHold = true;
         }
-        else
-            DKeyHold = false;
-
+        if (GetAsyncKeyState((unsigned short)'Q') & 0x8000)
+        {
+            DecideToDo(*m_vCharacters, *m_vResources);
+        }
+        
         //clear game screen window
         Fill(m_nBorder, m_nBorder, m_nStoneWidth+10, m_nStoneHeight+10, L' ');
         // clear Player interface window
-
+        Fill(m_nBorder + m_nControl, m_nBorder, m_nStoneWidth, m_nStoneHeight, L' ');
         // clear Event interface window
 
 
