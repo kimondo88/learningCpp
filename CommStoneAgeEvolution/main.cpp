@@ -58,7 +58,7 @@ private:
         for ( int i = 0; i < 5 ; i++)
         {
             c = random() % 900 ;
-            m_vCharacters->push_back(npc(c, 100, 100, 150));
+            m_vCharacters->push_back(npc(c, 100, 100, 75));
         }
 
         for ( int i = 0; i < 5 ; i++)
@@ -140,7 +140,7 @@ private:
     virtual bool Gather(resources &toGather,npc &Gatherer)
     {
         // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
-        if ( Gatherer.GetStrength() - toGather.GetWeight()*Gatherer.GetSpeed() > 0)
+        if ( Gatherer.GetStrength() /*- toGather.GetWeight()*Gatherer.GetSpeed()*/ > 0)
         {
             if (toGather.GetQuantity() > Gatherer.GetSpeed())
             {
@@ -153,7 +153,7 @@ private:
             }
             else
             {
-                Gatherer.SetStrength(toGather.GetWeight()*toGather.GetQuantity());
+                Gatherer.SetStrength(0);
                 Gatherer.inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*toGather.GetQuantity()));
                 toGather.RemoveQuantity(toGather.GetQuantity());
                 TestCode(toGather.GetQuantity(), 5);
@@ -187,8 +187,8 @@ private:
                     {
                         //refresh position 
                         m_vResources.erase(m_vResources.begin()+r);
-                        RefreshPosition(&m_vResources);
-                        TestCode(888, 1);
+                        m_stone[(m_vResources.begin()+r)->GetCoordinates()] = 0x00;
+                        TestCode(898, 1);
                     }
                     quantityOfRes--;
                     r++; 
@@ -246,7 +246,6 @@ protected:
             DKeyHold = false;
 
         RefreshPosition(m_vCharacters);
-
         //make npc gather stuff if gather false the delete resource then refresh position
         if (GetAsyncKeyState((unsigned short)'E') & 0x8000)
         {

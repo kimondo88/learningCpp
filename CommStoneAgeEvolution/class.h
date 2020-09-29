@@ -25,8 +25,8 @@ public:
         else 
             this -> m_nHealth = m_nHealth;
 
-        if(m_fStrength < 0.0f)
-            m_fStrength = 100.0f;
+        if(m_fStrength < 0)
+            m_fStrength = 100;
         else 
             this -> m_fStrength = m_fStrength;
 
@@ -66,7 +66,7 @@ public:
         m_nCoordinates += MOVE;
     }
 
-    virtual void SetStrength(float x)
+    virtual void SetStrength(int x)
     {
         m_fStrength -= x;
     }
