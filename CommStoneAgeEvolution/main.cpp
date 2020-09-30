@@ -58,7 +58,7 @@ private:
         for ( int i = 0; i < 5 ; i++)
         {
             c = random() % 900 ;
-            m_vCharacters->push_back(npc(c, 100, 100, 75));
+            m_vCharacters->push_back(npc(c, 100, 100, 120));
         }
 
         for ( int i = 0; i < 5 ; i++)
@@ -140,7 +140,7 @@ private:
     virtual bool Gather(resources &toGather,npc &Gatherer)
     {
         // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
-        if ( Gatherer.GetStrength() /*- toGather.GetWeight()*Gatherer.GetSpeed()*/ > 0)
+        if ( Gatherer.GetStrength() /*- toGather.GetWeight()*Gatherer.GetSpeed()*/ >= 0)
         {
             if (toGather.GetQuantity() > Gatherer.GetSpeed())
             {
@@ -153,20 +153,20 @@ private:
             }
             else
             {
-                Gatherer.SetStrength(0);
+                Gatherer.SetStrength(Gatherer.GetSpeed()*toGather.GetWeight());
                 Gatherer.inventory->push_back(make_pair(toGather.GetName(), toGather.GetWeight()*toGather.GetQuantity()));
                 toGather.RemoveQuantity(toGather.GetQuantity());
                 TestCode(toGather.GetQuantity(), 5);
                 TestCode(Gatherer.GetStrength(), 6);
                 return false;
             }
-            return true;
         }
         else
         {
             // make npc go store the inventory into warehouse
             return true;
         }
+
     }
 
     //function npc do stuff - pick one to do.
@@ -178,21 +178,22 @@ private:
         for (auto i = m_vCharacters.begin(); i != m_vCharacters.end(); ++i)
             //for(auto r = m_vResources.begin(); r != m_vResources.end(); ++r)
             {
-                int r = 0;
+                auto r = m_vResources.begin();
                 if(quantityOfRes >= 0)
                 {
-                    bool delResource = Gather(m_vResources.at(0+r), *i);
+                    bool delResource = Gather(*r, *i);
                     TestCode(777, 0);
+                    TestCode(r->GetQuantity(), 2);
                     if (!delResource)
                     {
                         //refresh position 
-                        m_vResources.erase(m_vResources.begin()+r);
-                        m_stone[(m_vResources.begin()+r)->GetCoordinates()] = 0x00;
+                        m_stone[r->GetCoordinates()] = 0x00;
+                        m_vResources.erase(r);
                         TestCode(898, 1);
                     }
                     quantityOfRes--;
                     r++; 
-                    TestCode(m_vResources.at(0+r).GetQuantity(), 2);
+                    
                 }
             }
     }

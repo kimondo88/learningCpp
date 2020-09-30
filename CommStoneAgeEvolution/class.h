@@ -68,7 +68,10 @@ public:
 
     virtual void SetStrength(int x)
     {
-        m_fStrength -= x;
+        if (m_fStrength >= x)
+            m_fStrength -= x;
+        else
+            m_fStrength = 0;
     }
 
     vector<pair<wstring, int>> *inventory;
