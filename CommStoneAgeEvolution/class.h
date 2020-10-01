@@ -11,7 +11,7 @@ using std::wstring;
 class npc 
 {
 public: 
-    npc(int m_nCoordinates = 1, int m_nHealth = 100, int m_fStrength = 100, int m_nSpeed = 2, wstring m_sName = L"Gimli")
+    npc(int m_nCoordinates = 1, int m_nHealth = 100, int m_fStrength = 100, int m_nSpeed = 2)
     {
         if (m_nCoordinates > 899)
             m_nCoordinates = 899;
@@ -34,14 +34,7 @@ public:
 
         inventory = new vector<pair<wstring, int>>;
 
-        this -> m_sName = m_sName;
-    };
-
-    ~npc()
-    {
-        delete inventory;
-        inventory = nullptr;
-    };
+    }
 
     virtual int GetSymbol()
     {
@@ -89,8 +82,6 @@ protected:
     int m_nHealth;
     int m_nSpeed;
     int m_fStrength;
-
-    wstring m_sName;
 
     enum
     {

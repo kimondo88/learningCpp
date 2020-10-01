@@ -33,6 +33,7 @@ private:
     int m_nStoneWidth;
     int m_nStoneHeight;
     int *m_stone;
+    int timeFrame;
 
     int m_nBorder;
     int m_nControl; 
@@ -148,7 +149,8 @@ private:
     virtual void DisplayEvent(wstring npcName, wstring action, int value, int x)
     {
         // draw action of npc doing something
-        wstring eventSomethingHappens = npcName + L" " + action + L" " + to_wstring(value);
+        wstring space = L" "; 
+        wstring eventSomethingHappens = npcName + space + action + space + to_wstring(value);
         DrawString(x + m_nBorder + m_nControl/2, x + m_nBorder + m_nEvent , eventSomethingHappens, FG_BLUE);
     }
 
@@ -192,6 +194,7 @@ private:
         auto r = m_vResources.begin();
         for (auto i = m_vCharacters.begin(); i != m_vCharacters.end(); ++i)
             {
+                
                 if(quantityOfRes >= 0)
                 {
                     bool delResource = Gather(*r, *i);
@@ -226,6 +229,7 @@ protected:
         m_stone = new int[m_nStoneWidth * m_nStoneHeight];
         m_vCharacters = new vector<npc>;
         m_vResources = new vector<resources>;
+        timeFrame = 0;
 
         m_nBorder = 10;
         m_nControl = 50;
@@ -249,6 +253,7 @@ protected:
 
     virtual bool OnUserUpdate(float fElapsedTime)
     {
+        timeFrame += 2;
         if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
             OnUserDestroy();
         if (GetAsyncKeyState((unsigned short)'D') & 0x8000 && !DKeyHold)
@@ -285,13 +290,23 @@ protected:
                 if(m_stone[y*m_nStoneWidth + x] == symbolNpc.GetSymbol() || m_stone[y*m_nStoneWidth + x] == symbolResources.GetSymbol() )
                     Draw(x + m_nBorder, y + m_nBorder, m_stone[y*m_nStoneWidth + x], FG_GREEN);
         // Draw Control Player Interface Window
-        for (int x = 0; x < 1; x++)
-            for( int y = 0 ; y < 2 ; y++)
-            {
-                DrawString(x + m_nBorder + m_nControl, y + m_nBorder , to_wstring(555), FG_RED);
-                //if  (y == 3)
-                //    DrawString(x + m_nBorder + m_nControl, y + m_nBorder , , FG_RED);
-            }
+        if (timeFrame > 5000)  
+        {
+            Fill(m_nBorder + m_nControl, m_nBorder, m_nBorder + m_nStoneWidth+ m_nControl, m_nBorder + m_nStoneHeight, L' ');
+            if (timeFrame > 10000)
+                timeFrame = 0;
+        }
+        else
+        {
+            for (int x = 0; x < 1; x++)
+                for( int y = 0 ; y < 2 ; y++)
+                {
+                    DrawString(x + m_nBorder + m_nControl, y + m_nBorder , to_wstring(555), FG_RED);
+                    //if  (y == 3)
+                    //    DrawString(x + m_nBorder + m_nControl, y + m_nBorder , , FG_RED);
+                }
+        }
+        
         // Draw Event Interface Window
         for (int x = 0; x < 1; x++)
             for( int y = 0 ; y < 2 ; y++)
