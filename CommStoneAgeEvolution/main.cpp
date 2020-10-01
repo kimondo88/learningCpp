@@ -58,7 +58,7 @@ private:
         for ( int i = 0; i < 5 ; i++)
         {
             c = random() % 900 ;
-            m_vCharacters->push_back(npc(c, 100, 100, 120));
+            m_vCharacters->push_back(npc(c, 100, 100, 20));
         }
 
         for ( int i = 0; i < 5 ; i++)
@@ -137,6 +137,21 @@ private:
 
     }
 
+    virtual wstring PickName()
+    {
+        wstring randomName[] = {L"Gimli", L"Durin", L"Gandalf", L"Sam", L"Frodo"};
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        mt19937 random(seed);
+        return randomName[random() % 5];
+    }
+
+    virtual void DisplayEvent(wstring npcName, wstring action, int value, int x)
+    {
+        // draw action of npc doing something
+        wstring eventSomethingHappens = npcName + L" " + action + L" " + to_wstring(value);
+        DrawString(x + m_nBorder + m_nControl/2, x + m_nBorder + m_nEvent , eventSomethingHappens, FG_BLUE);
+    }
+
     virtual bool Gather(resources &toGather,npc &Gatherer)
     {
         // check resource weight, if enough decrease quantity and get resource weight to npc, apply resource to npc inventory
@@ -174,11 +189,9 @@ private:
     {
         int quantityOfRes = m_vResources.size();
         //TestCode(quantityOfRes, 2);
-        
+        auto r = m_vResources.begin();
         for (auto i = m_vCharacters.begin(); i != m_vCharacters.end(); ++i)
-            //for(auto r = m_vResources.begin(); r != m_vResources.end(); ++r)
             {
-                auto r = m_vResources.begin();
                 if(quantityOfRes >= 0)
                 {
                     bool delResource = Gather(*r, *i);
